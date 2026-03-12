@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# Colors for terminal output
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+# Function to update the system
+update_system() {
+    echo -e "${GREEN}Updating system...${NC}"
+    sudo apt update && sudo apt upgrade -y
+}
+
+# Function to install WebSocket server
+install_ws() {
+    echo -e "${GREEN}Installing WebSocket server...${NC}"
+    # Example: installing websocket-terminal from GitHub
+    sudo apt install -y git python3 python3-pip
+    git clone https://github.com/noelrubio143/ws-server.git ~/ws-server
+    cd ~/ws-server
+    pip3 install -r requirements.txt
+    echo -e "${GREEN}WebSocket server installed!${NC}"
+}
+
+# Function to enable SSL (using Let's Encrypt)
+install_ssl() {
+    echo -e "${GREEN}Installing SSL certificate...${NC}"
+    sudo apt install -y certbot
+    echo -e "${GREEN}Use certbot to generate SSL certificate for your domain.${NC}"
+    echo "Example: sudo certbot certonly --standalone -d yourdomain.com"
+}
+
+# Function to install SSH server
+install_ssh() {
+    echo -e "${GREEN}Installing OpenSSH server...${NC}"
+    sudo apt install -y openssh-server
+    sudo systemctl enable ssh
+    sudo systemctl start ssh
+    echo -e "${GREEN}SSH server installed and running!${NC}"
+}
+
+# Menu
+while true; do
+    clear
+    echo -e "${GREEN}===== SERVER SETUP MENU =====${NC}"
+    echo "1) Update System"
+    echo "2) Install WebSocket Server"
+    echo "3) Install SSL (Let's Encrypt)"
+    echo "4) Install SSH Server"
+    echo "5) Exit"
+    read -p "Choose an option [1-5]: " option
+
+    case $option in
+        1) update_system ;;
+        2) install_ws ;;
+        3) install_ssl ;;
+        4) install_ssh ;;
+        5) exit 0 ;;
+        *) echo -e "${RED}Invalid option!${NC}" ; sleep 1 ;;
+    esac
+    read -p "Press Enter to continue..." dummy
+done
